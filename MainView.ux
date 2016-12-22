@@ -1,0 +1,110 @@
+<!--<App>
+	<ClientPanel>
+		<Page ux:Class="PageWithTitle" ux:Name="self" HitTestMode="LocalBoundsAndChildren">
+			<DockLayout />
+			<float4 ux:Property="HeaderColor" />
+			<float4 ux:Property="HeaderTextColor" />
+			<!- Header -
+			<StackPanel Dock="Top">
+				<Panel Color="{Property self.HeaderColor}" Height="45">
+					<Text Value="{Property self.Title}" FontSize="22"
+						  Alignment="Center" TextColor="{Property self.HeaderTextColor}"/>
+				</Panel>
+			</StackPanel>
+			<!- Footer -
+			<!-<Panel Height="10%" Color="#0008" Alignment="Bottom">
+				<WhileActive Invert="true" Threshold="0.4">
+					<Move RelativeTo="Size" Y="1" Duration="0.4" Easing="CircularInOut"/>
+				</WhileActive>
+				<Text Value="{Property self.Instructions}" Margin="20" TextColor="#fff" Alignment="Center" />
+			</Panel>-
+		</Page>
+		<PageControl>
+			<!- Main page-
+			<PageWithTitle Title="Get Moving" HeaderColor="#595FFF" HeaderTextColor="#FFF"
+						   Color="#FEF">
+				<Panel>
+					<MapView Latitude="59.911567" Longitude="10.741030" Zoom="10">
+		                <MapMarker Latitude="59.911567" Longitude="10.741030" Label="Fuse HQ"/>
+		            </MapView>
+				</Panel>
+				<!- /main page -
+			</PageWithTitle>
+		</PageControl>
+	</ClientPanel>
+</App>
+-->
+<App>
+    <ClientPanel>
+    	<Page ux:Class="PageWithTitle" ux:Name="self" HitTestMode="LocalBoundsAndChildren">
+			<DockLayout />
+			<float4 ux:Property="HeaderColor" />
+			<float4 ux:Property="HeaderTextColor" />
+			<!-- Header -->
+			<StackPanel Dock="Bottom">
+				<Panel Color="{Property self.HeaderColor}" Height="45">
+					<Text Value="{Property self.Title}" FontSize="22"
+						  Alignment="Center" TextColor="{Property self.HeaderTextColor}"/>
+				</Panel>
+			</StackPanel>
+		</Page>
+		<PageControl>
+			<!-- Main page -->
+			<PageWithTitle Title="Get Moving" HeaderColor="#595FFF" HeaderTextColor="#FFF"
+						   Color="#FEF">
+				<JavaScript>
+					var Observable = require("FuseJS/Observable");
+
+					var data = Observable();
+
+					fetch('http://getmoving.norbye.com/api/get_locations.php')
+						.then(function(response){ return response.json(); })
+						.then(function(responseObject){ data.value = responseObject; });
+
+
+					module.exports = {
+						data: data
+					};
+				</JavaScript>
+				<Panel>
+					<NativeViewHost>
+						<MapView Latitude="59.929425335723955" Longitude="10.757087767124176" Zoom="12">
+							<Each Items="{data.locations}">
+								<MapMarker Latitude="{coordinates.lat}" Longitude="{coordinates.lng}" Label="{name}" IconFile="Assets/imgs/map/pin v2.min.2.png" />
+							</Each>
+		            	</MapView>
+		            </NativeViewHost>
+				</Panel>
+				<!-- /main page -->
+			</PageWithTitle>
+			<!-- Login page -->
+			<PageWithTitle Title="Logg inn" HeaderColor="#595FFF" HeaderTextColor="#FFF"
+						   Color="#FEF">
+				<TextInput ux:Class="MyTextInput" FontSize="20" PlaceholderColor="#ccc" Padding="5">
+				    <Rectangle Layer="Background" CornerRadius="3">
+				        <Stroke Width="1" Color="#ccc" />
+				        <SolidColor Color="White" />
+				    </Rectangle>
+				</TextInput>
+				<Panel ux:Class="MyButton" HitTestMode="LocalBounds" Margin="0" Color="#25a">
+				    <string ux:Property="Text" />
+				    <Text Value="{ReadProperty Text}" Color="#fff" Alignment="Center" Margin="30,15" />
+
+				    <WhilePressed>
+				        <Change this.Color="#138" Duration="0.05" DurationBack=".2" />
+				    </WhilePressed>
+				</Panel>
+				<Panel>
+					<StackPanel Margin="10" ItemSpacing="10">
+						<Image File="Assets/imgs/Get Moving FB profilbilde - cut 1 - inv.png" />
+						<Text Alignment="TopCenter" Margin="0, 10, 0, 20">Velkommen!</Text>
+					    <MyTextInput PlaceholderText="Brukernavn" />
+					    <MyTextInput PlaceholderText="Passord" IsPassword="true" />
+					    <MyButton Text="Logg inn" />
+					</StackPanel>
+				</Panel>
+				<!-- /Login page -->
+			</PageWithTitle>
+		</PageControl>
+    </ClientPanel>
+</App>
